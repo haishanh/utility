@@ -1,5 +1,5 @@
-# utilitiy
-personal utilities
+# utility
+just personal utilities
 
  * t_vps_dl_speed.py
 
