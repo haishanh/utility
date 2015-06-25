@@ -1,7 +1,7 @@
 # utilitiy
 personal utilities
 
-* t_vps_dl_speed.py
+ * t_vps_dl_speed.py
 
 > test VPS download speed
 
@@ -18,4 +18,12 @@ Digital Ocean nyc1....................................................: 2.93 MB/
 Digital Ocean ams3....................................................: 1.06 MB/s
 Digital Ocean ams2....................................................: 3.77 MB/s
 Digital Ocean ams1....................................................: 3.69 MB/s
+```
+
+ * dif
+
+> Very simple <diff -u file1 file2> wrapper with 'green' insertion and 'red' insertion
+
+```
+dif oldfile newfile
 ```
