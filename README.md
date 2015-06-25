@@ -22,7 +22,7 @@ Digital Ocean ams1....................................................: 3.69 MB/
 
  * dif
 
-> Very simple <diff -u file1 file2> wrapper with 'green' insertion and 'red' insertion
+> Very simple <diff -u file1 file2> wrapper with 'green' insertion and 'red' deletion
 
 ```
 dif oldfile newfile
