@@ -1,0 +1,31 @@
+#!/bin/bash
+# haishanh
+
+gen_ssh_config()
+{
+  local pair=$(echo $http_proxy | sed 's/http:\/\///' | sed 's/\/.*//')
+  local ip=$(echo $pair | awk -F: '{print $1}')
+  local port=$(echo $pair | awk -F: '{print $2}')
+  cat<<EOF
+ProxyCommand corkscrew $ip $port %h %p
+EOF
+}
+
+cleanup()
+{
+  if [ -f ~/.ssh/config ]; then
+    # echo "cleanup"
+    rm -rf ~/.ssh/config
+  fi
+}
+
+trap "cleanup" INT EXIT
+
+if [ -n "$1" -a "$1" == "push" -o "$1" == "clone" -o "$1" == "pull" -o "$1" == "fetch" ]; then
+  echo "using corkscrew..."
+  gen_ssh_config > ~/.ssh/config
+  # rw for user only
+  chmod 600 ~/.ssh/config
+fi
+
+git "${@}"
