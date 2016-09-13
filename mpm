@@ -1,0 +1,69 @@
+#!/bin/bash
+
+MONODIR="/Users/haishanh/t"
+TARGET="dependencies"
+
+random=$(date +"%y%m%d%H%M%S")
+TMP="/tmp/pkg-${random}.json"
+
+
+install-if-notexist()
+{
+  local pkg=$1
+  local isLastOne=$2
+  local ret=$(grep "\"${pkg}\":" package.json)
+  if [ ! -z "$ret" ]; then
+    echo "$pkg already exist"
+  else
+    npm install --save $pkg
+  fi
+
+  ret=$(grep "\"${pkg}\":" package.json)
+  ret=$(echo "$ret" | sed 's/,$//')
+  if [ -z "$isLastOne" ]; then
+    echo "${ret}," >> $TMP
+  else
+    echo "${ret}" >> $TMP
+  fi
+}
+
+install-all()
+{
+  local num=$#
+  local i=0
+  echo "{" > $TMP
+  for pkg in $@; do
+    i=$(( $i + 1 ))
+    if [ $i -eq $num ]; then
+      install-if-notexist $pkg last
+    else
+      install-if-notexist $pkg
+    fi
+  done
+  echo "}" >> $TMP
+}
+
+[ -z $1 ] && exit 0
+if [ "$1" != "install" ] || [ "$1" != "i" ]; then
+  shift
+else
+  exit 0
+fi
+
+
+if [ "$1" == "-D" ] || [ "$1" == "--save-dev" ]; then
+  TARGET="devDependencies"
+  shift
+elif [ "$1" == "-S" ] || [ "$1" == "--save" ]; then
+  shift
+fi
+
+DIR=$PWD
+cd $MONODIR
+install-all $@
+
+cat $TMP
+
+cd $DIR
+pkgupdate.js package.json $TMP $TARGET
+rm -rf $TMP
