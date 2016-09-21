@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MONODIR="/Users/haishanh/t"
+MONODIR="$HOME/t"
 TARGET="dependencies"
 
 random=$(date +"%y%m%d%H%M%S")
@@ -11,14 +11,15 @@ install-if-notexist()
 {
   local pkg=$1
   local isLastOne=$2
-  local ret=$(grep "\"${pkg}\":" package.json)
+  local pkgname=$(echo $pkg | sed 's/@.*//')
+  local ret=$(grep "\"${pkgname}\":" package.json)
   if [ ! -z "$ret" ]; then
     echo "$pkg already exist"
   else
     npm install --save $pkg
   fi
 
-  ret=$(grep "\"${pkg}\":" package.json)
+  ret=$(grep "\"${pkgname}\":" package.json)
   ret=$(echo "$ret" | sed 's/,$//')
   if [ -z "$isLastOne" ]; then
     echo "${ret}," >> $TMP
