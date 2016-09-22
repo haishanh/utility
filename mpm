@@ -7,10 +7,9 @@ random=$(date +"%y%m%d%H%M%S")
 TMP="/tmp/pkg-${random}.json"
 
 
-install-if-notexist()
+install_if_notexist()
 {
   local pkg=$1
-  local isLastOne=$2
   local pkgname=$(echo $pkg | sed 's/@.*//')
   local ret=$(grep "\"${pkgname}\":" package.json)
   if [ ! -z "$ret" ]; then
@@ -21,26 +20,31 @@ install-if-notexist()
 
   ret=$(grep "\"${pkgname}\":" package.json)
   ret=$(echo "$ret" | sed 's/,$//')
-  if [ -z "$isLastOne" ]; then
-    echo "${ret}," >> $TMP
-  else
-    echo "${ret}" >> $TMP
+  if [ -n "$ret" ]; then
+    echo -n "${ret}," >> $TMP
   fi
 }
 
-install-all()
+remove_trailing_comma()
+{
+  local f=$1
+  local tmp="${f}__2"
+
+  sed 's/,$//' $f > $tmp
+  cat $tmp > $f
+  rm -rf $tmp
+}
+
+install_all()
 {
   local num=$#
   local i=0
   echo "{" > $TMP
   for pkg in $@; do
     i=$(( $i + 1 ))
-    if [ $i -eq $num ]; then
-      install-if-notexist $pkg last
-    else
-      install-if-notexist $pkg
-    fi
+    install_if_notexist $pkg
   done
+  remove_trailing_comma $TMP
   echo "}" >> $TMP
 }
 
@@ -61,7 +65,7 @@ fi
 
 DIR=$PWD
 cd $MONODIR
-install-all $@
+install_all $@
 
 cat $TMP
 
